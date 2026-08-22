@@ -35,6 +35,24 @@ const upload = multer({
     }
 });
 
+function getSafeCertificateFileName(file) {
+    if (file?.originalname && file.originalname.trim()) {
+        return file.originalname.trim();
+    }
+
+    const extensionByMimeType = {
+        'application/pdf': 'pdf',
+        'image/jpeg': 'jpg',
+        'image/jpg': 'jpg',
+        'image/png': 'png',
+        'image/heic': 'heic',
+        'image/heif': 'heif'
+    };
+
+    const extension = extensionByMimeType[file?.mimetype] || 'bin';
+    return `certificato_${Date.now()}.${extension}`;
+}
+
 /**
  * POST /api/certificati/verifica-socio
  * Verifica se un socio esiste nel database tramite codice fiscale
@@ -167,6 +185,14 @@ router.post('/upload',
             console.log('=== DEBUG EMAIL VALIDATION ===');
             console.log('Handler email from DB:', handler.email);
             console.log('Email confirm from form:', emailConfirm);
+            
+            if (!handler.email || typeof handler.email !== 'string') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Per questo socio non risulta un indirizzo email valido. Contatta la segreteria per aggiornare i dati prima di caricare il certificato.'
+                });
+            }
+
             console.log('Handler email (lowercase):', handler.email.toLowerCase());
             console.log('Email confirm (lowercase):', emailConfirm.toLowerCase());
             console.log('Handler email length:', handler.email.length);
@@ -188,7 +214,7 @@ router.post('/upload',
                 taxCode: taxCode,
                 expiryDate: new Date(expiryDate),
                 fileBuffer: req.file.buffer,
-                fileName: req.file.originalname || `certificato_${Date.now()}.${req.file.mimetype.split('/')[1]}`,
+                fileName: getSafeCertificateFileName(req.file),
                 mimeType: req.file.mimetype
             };
 

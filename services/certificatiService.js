@@ -19,6 +19,23 @@ const auth = new google.auth.GoogleAuth({
 });
 const sheets = google.sheets({ version: 'v4', auth });
 
+function getCertificateExtension(originalName, mimeType) {
+    if (typeof originalName === 'string' && originalName.includes('.')) {
+        return originalName.split('.').pop().toLowerCase();
+    }
+
+    const extensionByMimeType = {
+        'application/pdf': 'pdf',
+        'image/jpeg': 'jpg',
+        'image/jpg': 'jpg',
+        'image/png': 'png',
+        'image/heic': 'heic',
+        'image/heif': 'heif'
+    };
+
+    return extensionByMimeType[mimeType] || 'bin';
+}
+
 /**
  * Cerca un handler nel database Firestore tramite codice fiscale
  * @param {string} taxCode - Codice fiscale dell'handler
@@ -94,7 +111,7 @@ async function updateMedicalCertificateExpiry(handlerId, expiryDate, certificate
 async function uploadCertificateToStorage(fileBuffer, originalName, mimeType, taxCode, expiryDate) {
     try {
         // Estrai l'estensione dal file originale
-        const extension = originalName.split('.').pop().toLowerCase();
+        const extension = getCertificateExtension(originalName, mimeType);
 
         // Formatta la data di scadenza per il nome del file (YYYY-MM-DD)
         const formattedExpiryDate = expiryDate.toISOString().split('T')[0];
@@ -119,7 +136,7 @@ async function uploadCertificateToStorage(fileBuffer, originalName, mimeType, ta
                     taxCode: normalizedTaxCode,
                     expiryDate: formattedExpiryDate,
                     uploadDate: new Date().toISOString(),
-                    originalName: originalName
+                    originalName: originalName || `certificato.${extension}`
                 }
             }
         });
