@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACL Forms - Anteprima locale</title>
+    <script>
+      window.ACLFormsConfig = {
+        restUrl: '/wp-json/acl-forms/v1',
+        restNonce: 'preview',
+        publicNonce: 'preview',
+        templates: {
+          registration: '/templates/iscrizione_2.pdf',
+          receipt: '/templates/ricevuta.pdf'
+        }
+      };
+    </script>
+  </head>
+  <body style="margin:0;background:#eef3f7">
+    <div class="acl-forms-root" data-form="registration"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

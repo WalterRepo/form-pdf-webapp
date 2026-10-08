@@ -1,0 +1,14 @@
+{
+  "name": "agility-club-labora/acl-forms",
+  "description": "Backend PDF per ACL Moduli React",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=8.0",
+    "setasign/fpdf": "1.9.0",
+    "setasign/fpdi": "2.6.8"
+  },
+  "config": {
+    "sort-packages": true,
+    "optimize-autoloader": true
+  }
+}

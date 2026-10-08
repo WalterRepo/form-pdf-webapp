@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACL Ricevute - Anteprima locale</title>
+    <script>
+      window.ACLFormsConfig = {
+        restUrl: '/wp-json/acl-forms/v1', restNonce: 'preview', publicNonce: 'preview',
+        templates: { registration: '/templates/iscrizione_2.pdf', receipt: '/templates/ricevuta.pdf' }
+      };
+      window.fetch = ((nativeFetch) => async (url, options) => {
+        if (String(url).endsWith('/receipts/init')) {
+          return new Response(JSON.stringify({ nextNumber: 43, contacts: [] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }
+        return nativeFetch(url, options);
+      })(window.fetch);
+    </script>
+  </head>
+  <body style="margin:0;background:#eef3f7">
+    <div class="acl-forms-root" data-form="receipt"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
